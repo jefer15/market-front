@@ -8,6 +8,7 @@ import { OrderService } from '../../../services/order/order.service';
 import { Order } from '../../../models/order/order.model';
 import { OrderDetail } from '../../../models/order-detail/order-detail.model';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-order-detail',
@@ -17,7 +18,8 @@ import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/materia
     RouterModule,
     MatTableModule,
     MatCardModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule
   ],
   templateUrl: './order-detail.component.html',
   styleUrl: './order-detail.component.scss'
@@ -39,5 +41,9 @@ export class OrderDetailComponent implements OnInit {
       this.order = data;
       this.dataSource.data = data.details || [];
     });
+  }
+
+  close(): void {
+    this.dialogRef.close();
   }
 }

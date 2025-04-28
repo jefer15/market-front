@@ -1,71 +1,89 @@
-<div class="p-6">
-  <h2 mat-dialog-title class="text-2xl font-bold mb-4">
-    {{ mode === 'create' ? 'Create Order' : 'Update Order' }}
+<div class="p-6 bg-gray-300">
+  <h2 mat-dialog-title class="text-xl font-bold mb-4">
+    {{ mode === 'create' ? 'Crear Orden' : 'Actualizar Orden' }}
   </h2>
-  <mat-dialog-content class="space-y-4">
-    <form [formGroup]="orderForm" (ngSubmit)="onSubmit()">
-      <div formArrayName="details" class="space-y-4">
-        <div
-          *ngFor="let detail of details.controls; let i=index"
-          [formGroupName]="i"
-          class="flex items-center space-x-4"
-        >
-          <mat-form-field appearance="fill" class="flex-1">
-            <mat-label>Product</mat-label>
-            <mat-select formControlName="productId">
-              <mat-option *ngFor="let product of products" [value]="product.id">
-                {{ product.name }}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="detail.get('productId')?.hasError('required')">
-              Product is required
-            </mat-error>
-          </mat-form-field>
-          <mat-form-field appearance="fill" class="flex-1">
-            <mat-label>Quantity</mat-label>
-            <input matInput type="number" formControlName="quantity" min="1">
-            <mat-error *ngIf="detail.get('quantity')?.hasError('required')">
-              Quantity is required
-            </mat-error>
-            <mat-error *ngIf="detail.get('quantity')?.hasError('min')">
-              Minimum quantity is 1
-            </mat-error>
-          </mat-form-field>
-          <span class="flex-1">{{ getSubtotal(i) | currency }}</span>
-          <button
-            mat-icon-button
-            color="warn"
-            (click)="removeDetail(i)"
-            class="hover:text-red-700"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
+  <mat-dialog-content class="space-y-6">
+    <form [formGroup]="orderForm">
+      <div formArrayName="details" class="space-y-2">
+        <table class="w-full border-collapse bg-white rounded-lg shadow-lg">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="p-3 text-left text-sm font-semibold text-gray-700">Producto</th>
+              <th class="p-3 text-left text-sm font-semibold text-gray-700">Cantidad</th>
+              <th class="p-3 text-left text-sm font-semibold text-gray-700">Subtotal</th>
+              <th class="p-3"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let detail of details.controls; let i=index" [formGroupName]="i" class="bg-gray-50">
+              <td class="p-3">
+                <mat-form-field class="w-full">
+                  <mat-select formControlName="productId" placeholder="Seleccione un producto">
+                    <mat-option *ngFor="let product of products" [value]="product.id">
+                      {{ product.name }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="detail.get('productId')?.hasError('required')">
+                    El producto es requerido
+                  </mat-error>
+                </mat-form-field>
+              </td>
+              <td class="p-3">
+                <mat-form-field class="w-full">
+                  <mat-label>cantidad</mat-label>
+                  <input matInput type="number" formControlName="quantity" min="1" placeholder="Digite la cantidad">
+                  <mat-error *ngIf="detail.get('quantity')?.hasError('required')">
+                    La cantidad es requerida
+                  </mat-error>
+                  <mat-error *ngIf="detail.get('quantity')?.hasError('min')">
+                    La cantidad minima es 1
+                  </mat-error>
+                </mat-form-field>
+              </td>
+              <td class="p-3">
+                {{ getSubtotal(i) | currency }}
+              </td>
+              <td class="p-3">
+                <button mat-icon-button (click)="removeDetail(i)" class="text-gray-500 hover:text-red-600">
+                  <mat-icon>remove_circle</mat-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       <button
-        mat-raised-button
-        color="accent"
+        mat-stroked-button
         type="button"
-        class="bg-gray-200 hover:bg-gray-300 mt-4"
+        class="mt-4 text-gray-700 border-gray-300 hover:bg-gray-200 flex items-center !bg-white"
         (click)="addDetail()"
       >
-        Add Product
+        <mat-icon class="mr-2">add_circle</mat-icon>
+        Agregar nuevo producto
       </button>
-      <h3 class="text-lg font-semibold mt-4">Total: {{ total | currency }}</h3>
+
+      <div class="mt-6 flex justify-end">
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+          <h3 class="text-sm font-semibold text-gray-700">Valor TOTAL</h3>
+          <div class="p-2 bg-gray-50 rounded border-2 border-purple-500 font-bold">
+            {{ total | currency }}
+          </div>
+        </div>
+      </div>
     </form>
   </mat-dialog-content>
   <mat-dialog-actions class="flex justify-end space-x-4 mt-6">
-    <button mat-button (click)="onCancel()" class="bg-gray-500 hover:bg-gray-700 text-white">
-      Cancel
+    <button mat-stroked-button (click)="close()" class="text-gray-700 border-gray-300 hover:bg-gray-200 !bg-white">
+      Cancelar
     </button>
     <button
       mat-raised-button
       color="primary"
       [disabled]="orderForm.invalid"
-      (click)="onSubmit()"
-      class="bg-blue-500 hover:bg-blue-700"
+      (click)="save()"
+      class="bg-purple-600 hover:bg-purple-700 text-white"
     >
-      Save
+      Guardar
     </button>
   </mat-dialog-actions>
 </div>

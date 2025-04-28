@@ -11,6 +11,7 @@ import { ProductService } from '../../../services/product/product.service';
 import { OrderService } from '../../../services/order/order.service';
 import { Order, OrderDto } from '../../../models/order/order.model';
 import { Product } from '../../../models/product/product.model';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-order-form',
@@ -52,13 +53,12 @@ export class OrderFormComponent implements OnInit {
   ngOnInit(): void {
     this._productService.getProducts().subscribe(({ data }) => {
       this.products = data;
+      if (this.mode === 'update' && this.order) {
+        this.updateDetail();
+      } else {
+        this.addDetail();
+      }
     });
-
-    if (this.mode === 'update' && this.order) {
-      this.populateForm();
-    } else {
-      this.addDetail();
-    }
   }
 
   get details(): FormArray {
@@ -70,6 +70,14 @@ export class OrderFormComponent implements OnInit {
       productId: ['', Validators.required],
       quantity: [1, [Validators.required, Validators.min(1)]]
     });
+
+    detail.get('productId')?.valueChanges.subscribe(() => {
+      this.calculateTotal();
+    });
+    detail.get('quantity')?.valueChanges.subscribe(() => {
+      this.calculateTotal();
+    });
+
     this.details.push(detail);
     this.calculateTotal();
   }
@@ -90,21 +98,28 @@ export class OrderFormComponent implements OnInit {
     this.total = this.details.controls.reduce((sum, _, index) => sum + this.getSubtotal(index), 0);
   }
 
-  populateForm(): void {
+  updateDetail(): void {
     if (this.order?.details) {
       this.order.details.forEach(detail => {
-        this.details.push(
-          this.fb.group({
-            productId: [detail.product.id, Validators.required],
-            quantity: [detail.quantity, [Validators.required, Validators.min(1)]]
-          })
-        );
+        const detailGroup = this.fb.group({
+          productId: [detail.product.id, Validators.required],
+          quantity: [detail.quantity, [Validators.required, Validators.min(1)]]
+        });
+
+        detailGroup.get('productId')?.valueChanges.subscribe(() => {
+          this.calculateTotal();
+        });
+        detailGroup.get('quantity')?.valueChanges.subscribe(() => {
+          this.calculateTotal();
+        });
+
+        this.details.push(detailGroup);
       });
       this.calculateTotal();
     }
   }
 
-  onSubmit(): void {
+  save(): void {
     if (this.orderForm.valid) {
       const orderDto: OrderDto = this.orderForm.value;
       const request = this.mode === 'create'
@@ -112,12 +127,21 @@ export class OrderFormComponent implements OnInit {
         : this._orderService.updateOrder(this.order!.id, orderDto);
 
       request.subscribe(() => {
-        this.dialogRef.close(true);
+        Swal.fire({
+          title: "Orden",
+          text: `Se ha ${this.mode === 'create' ? 'creado' : 'actualizado'} exitosamente la orden`,
+          icon: 'success',
+          confirmButtonText: 'Ok',
+          showConfirmButton: true,
+          showDenyButton: false
+        }).then(() => {
+          this.dialogRef.close(true);
+        });
       });
     }
   }
 
-  onCancel(): void {
+  close(): void {
     this.dialogRef.close();
   }
 }
