@@ -1,0 +1,41 @@
+<div class="p-6 bg-gray-300 relative">
+  <div class="bg-white rounded-lg shadow-lg p-6">
+    <h2 class="text-xl font-bold text-gray-700 mb-4">Productos Más Vendidos</h2>
+    <div *ngIf="isLoading" class="flex justify-center items-center">
+      <p class="text-gray-700">Cargando productos...</p>
+    </div>
+    <button
+        mat-raised-button
+        (click)="downloadPdf()"
+        class="mb-3 text-white px-4 py-2 rounded-lg flex items-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+      >
+        <mat-icon class="mr-2">download</mat-icon>
+        Descargar PDF
+      </button>
+    <div *ngIf="!isLoading" class="overflow-x-auto rounded-lg shadow-md bg-white">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr class="bg-gray-200">
+            <th class="p-3 text-left text-sm font-semibold text-gray-700 uppercase">Producto</th>
+            <th class="p-3 text-left text-sm font-semibold text-gray-700 uppercase">Precio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of topProducts" class="hover:bg-gray-50 transition duration-300 ease-in-out">
+            <td class="p-3 text-sm text-gray-900">{{ product.name }}</td>
+            <td class="p-3 text-sm text-gray-900">{{ product.price | currency }}</td>
+          </tr>
+          <tr *ngIf="topProducts.length === 0" class="hover:bg-gray-50 transition duration-300 ease-in-out">
+            <td colspan="2" class="p-3 text-sm text-gray-900 text-center">No hay productos disponibles.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+  <div class="mt-3 flex justify-end">
+    <button mat-stroked-button (click)="close()" class="text-gray-700 border-gray-300 hover:bg-gray-200 !bg-white">
+      Cerrar
+    </button>
+  </div>
+</div>

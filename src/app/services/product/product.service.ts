@@ -11,9 +11,17 @@ export class ProductService {
 
   private apiUrl = `${environment.uri}/product`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getProducts(): Observable<{ statusCode: number; data: Product[] }> {
     return this.http.get<{ statusCode: number; data: Product[] }>(this.apiUrl);
+  }
+
+  getTop3(): Observable<{ statusCode: number; data: Product[] }> {
+    return this.http.get<{ statusCode: number; data: Product[] }>(`${this.apiUrl}/top3`);
+  }
+
+  downloadTop3Pdf(): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/top3/pdf`, { responseType: 'blob' });
   }
 }

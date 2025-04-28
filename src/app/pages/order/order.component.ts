@@ -14,6 +14,7 @@ import { Order } from '../../models/order/order.model';
 import { OrderFormComponent } from './order-form/order-form.component';
 import { OrderDetailComponent } from './order-detail/order-detail.component';
 import Swal from 'sweetalert2';
+import { TopProductsComponent } from './top-products/top-products.component';
 
 @Component({
   selector: 'app-order',
@@ -84,6 +85,18 @@ export class OrderComponent implements OnInit {
     const dialogRef = this.dialog.open(OrderDetailComponent, {
       width: '600px',
       data: order
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.getData();
+      }
+    });
+  }
+
+  openTopProducts() {
+    const dialogRef = this.dialog.open(TopProductsComponent, {
+      width: '600px',
     });
 
     dialogRef.afterClosed().subscribe(result => {
